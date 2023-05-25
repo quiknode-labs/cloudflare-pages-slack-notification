@@ -103,10 +103,8 @@ export default async function run() {
           text: `:cool_doge: New Cloudflare Pages deployment just dropped :cool_doge:`,
           attachments: [
             {
-              mrkdwn_in: ["text", "fields.value"],
+              mrkdwn_in: ["text"],
               color: "#b20f03",
-              author_name: `${context.actor}`,
-              author_link: `https://github.com/${context.actor}`,
               title: `Deployment failed: ${context.payload.head_commit.message}`,
               title_link: context.payload.head_commit.url,
               text: `Your build failed at *${dayjs(latestStage.ended_on).format(
@@ -114,9 +112,20 @@ export default async function run() {
               )}* on *${dayjs(latestStage.ended_on).format("MMMM D, YYYY")}*.`,
               fields: [
                 {
-                  title: "Environment",
-                  value: `*${_.startCase(deployment.environment)}*`,
+                  title: "Author",
+                  value: `@${context.actor}`,
                   short: true,
+                },
+                {
+                  title: "Environment",
+                  value: `${_.startCase(deployment.environment)}`,
+                  short: true,
+                },
+                {
+                  title: "Link",
+                  value: `N/A`,
+                  short: true,
+                  mrkdwn_in: ["value"],
                 },
                 {
                   title: "Build logs",
@@ -124,23 +133,10 @@ export default async function run() {
                   short: true,
                   mrkdwn_in: ["value"],
                 },
-                {
-                  title: "Deployment URL",
-                  value: `<${deployment.url}/graph-api>`,
-                  short: false,
-                  mrkdwn_in: ["value"],
-                },
-                {
-                  title: "Alias URLs",
-                  value: deployment.aliases
-                    ? `- <${deployment.aliases.join("/graph-api>\n- <")}>`
-                    : "N/A",
-                  short: false,
-                  mrkdwn_in: ["value"],
-                },
               ],
+              footer: " QuickNode.com",
               footer_icon: "https://www.quicknode.com/favicon.png",
-              ts: deployment.created_on,
+              ts: dayjs(deployment.created_on).unix(),
             },
           ],
         })
@@ -185,10 +181,8 @@ export default async function run() {
             text: `:cool_doge: New Cloudflare Pages deployment just dropped :cool_doge:`,
             attachments: [
               {
-                mrkdwn_in: ["text", "fields.value"],
+                mrkdwn_in: ["text"],
                 color: "#2db35e",
-                author_name: `${context.actor}`,
-                author_link: `https://github.com/${context.actor}`,
                 title: `Deployed successfully: ${context.payload.head_commit.message}`,
                 title_link: context.payload.head_commit.url,
                 text: `Your build succeeded at *${dayjs(
@@ -198,9 +192,20 @@ export default async function run() {
                 ).format("MMMM D, YYYY")}*.`,
                 fields: [
                   {
-                    title: "Environment",
-                    value: `*${_.startCase(deployment.environment)}*`,
+                    title: "Author",
+                    value: `@${context.actor}`,
                     short: true,
+                  },
+                  {
+                    title: "Environment",
+                    value: `${_.startCase(deployment.environment)}`,
+                    short: true,
+                  },
+                  {
+                    title: "Link",
+                    value: `<${deployment.url}/graph-api|View deployment →>`,
+                    short: true,
+                    mrkdwn_in: ["value"],
                   },
                   {
                     title: "Build logs",
@@ -208,23 +213,10 @@ export default async function run() {
                     short: true,
                     mrkdwn_in: ["value"],
                   },
-                  {
-                    title: "Deployment URL",
-                    value: `<${deployment.url}/graph-api>`,
-                    short: false,
-                    mrkdwn_in: ["value"],
-                  },
-                  {
-                    title: "Alias URLs",
-                    value: deployment.aliases
-                      ? `- <${deployment.aliases.join("/graph-api>\n- <")}>`
-                      : "N/A",
-                    short: false,
-                    mrkdwn_in: ["value"],
-                  },
                 ],
+                footer: " QuickNode.com",
                 footer_icon: "https://www.quicknode.com/favicon.png",
-                ts: deployment.created_on,
+                ts: dayjs(deployment.created_on).unix(),
               },
             ],
           })
