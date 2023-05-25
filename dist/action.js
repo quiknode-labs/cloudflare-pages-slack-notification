@@ -11819,6 +11819,158 @@ var require_dayjs_min = __commonJS({
   }
 });
 
+// node_modules/dayjs/plugin/utc.js
+var require_utc = __commonJS({
+  "node_modules/dayjs/plugin/utc.js"(exports, module2) {
+    !function(t, i) {
+      typeof exports == "object" && typeof module2 != "undefined" ? module2.exports = i() : typeof define == "function" && define.amd ? define(i) : (t = typeof globalThis != "undefined" ? globalThis : t || self).dayjs_plugin_utc = i();
+    }(exports, function() {
+      "use strict";
+      var t = "minute", i = /[+-]\d\d(?::?\d\d)?/g, e = /([+-]|\d\d)/g;
+      return function(s, f, n) {
+        var u = f.prototype;
+        n.utc = function(t2) {
+          var i2 = { date: t2, utc: true, args: arguments };
+          return new f(i2);
+        }, u.utc = function(i2) {
+          var e2 = n(this.toDate(), { locale: this.$L, utc: true });
+          return i2 ? e2.add(this.utcOffset(), t) : e2;
+        }, u.local = function() {
+          return n(this.toDate(), { locale: this.$L, utc: false });
+        };
+        var o = u.parse;
+        u.parse = function(t2) {
+          t2.utc && (this.$u = true), this.$utils().u(t2.$offset) || (this.$offset = t2.$offset), o.call(this, t2);
+        };
+        var r = u.init;
+        u.init = function() {
+          if (this.$u) {
+            var t2 = this.$d;
+            this.$y = t2.getUTCFullYear(), this.$M = t2.getUTCMonth(), this.$D = t2.getUTCDate(), this.$W = t2.getUTCDay(), this.$H = t2.getUTCHours(), this.$m = t2.getUTCMinutes(), this.$s = t2.getUTCSeconds(), this.$ms = t2.getUTCMilliseconds();
+          } else
+            r.call(this);
+        };
+        var a = u.utcOffset;
+        u.utcOffset = function(s2, f2) {
+          var n2 = this.$utils().u;
+          if (n2(s2))
+            return this.$u ? 0 : n2(this.$offset) ? a.call(this) : this.$offset;
+          if (typeof s2 == "string" && (s2 = function(t2) {
+            t2 === void 0 && (t2 = "");
+            var s3 = t2.match(i);
+            if (!s3)
+              return null;
+            var f3 = ("" + s3[0]).match(e) || ["-", 0, 0], n3 = f3[0], u3 = 60 * +f3[1] + +f3[2];
+            return u3 === 0 ? 0 : n3 === "+" ? u3 : -u3;
+          }(s2), s2 === null))
+            return this;
+          var u2 = Math.abs(s2) <= 16 ? 60 * s2 : s2, o2 = this;
+          if (f2)
+            return o2.$offset = u2, o2.$u = s2 === 0, o2;
+          if (s2 !== 0) {
+            var r2 = this.$u ? this.toDate().getTimezoneOffset() : -1 * this.utcOffset();
+            (o2 = this.local().add(u2 + r2, t)).$offset = u2, o2.$x.$localOffset = r2;
+          } else
+            o2 = this.utc();
+          return o2;
+        };
+        var h = u.format;
+        u.format = function(t2) {
+          var i2 = t2 || (this.$u ? "YYYY-MM-DDTHH:mm:ss[Z]" : "");
+          return h.call(this, i2);
+        }, u.valueOf = function() {
+          var t2 = this.$utils().u(this.$offset) ? 0 : this.$offset + (this.$x.$localOffset || this.$d.getTimezoneOffset());
+          return this.$d.valueOf() - 6e4 * t2;
+        }, u.isUTC = function() {
+          return !!this.$u;
+        }, u.toISOString = function() {
+          return this.toDate().toISOString();
+        }, u.toString = function() {
+          return this.toDate().toUTCString();
+        };
+        var l = u.toDate;
+        u.toDate = function(t2) {
+          return t2 === "s" && this.$offset ? n(this.format("YYYY-MM-DD HH:mm:ss:SSS")).toDate() : l.call(this);
+        };
+        var c = u.diff;
+        u.diff = function(t2, i2, e2) {
+          if (t2 && this.$u === t2.$u)
+            return c.call(this, t2, i2, e2);
+          var s2 = this.local(), f2 = n(t2).local();
+          return c.call(s2, f2, i2, e2);
+        };
+      };
+    });
+  }
+});
+
+// node_modules/dayjs/plugin/timezone.js
+var require_timezone = __commonJS({
+  "node_modules/dayjs/plugin/timezone.js"(exports, module2) {
+    !function(t, e) {
+      typeof exports == "object" && typeof module2 != "undefined" ? module2.exports = e() : typeof define == "function" && define.amd ? define(e) : (t = typeof globalThis != "undefined" ? globalThis : t || self).dayjs_plugin_timezone = e();
+    }(exports, function() {
+      "use strict";
+      var t = { year: 0, month: 1, day: 2, hour: 3, minute: 4, second: 5 }, e = {};
+      return function(n, i, o) {
+        var r, a = function(t2, n2, i2) {
+          i2 === void 0 && (i2 = {});
+          var o2 = new Date(t2), r2 = function(t3, n3) {
+            n3 === void 0 && (n3 = {});
+            var i3 = n3.timeZoneName || "short", o3 = t3 + "|" + i3, r3 = e[o3];
+            return r3 || (r3 = new Intl.DateTimeFormat("en-US", { hour12: false, timeZone: t3, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", timeZoneName: i3 }), e[o3] = r3), r3;
+          }(n2, i2);
+          return r2.formatToParts(o2);
+        }, u = function(e2, n2) {
+          for (var i2 = a(e2, n2), r2 = [], u2 = 0; u2 < i2.length; u2 += 1) {
+            var f2 = i2[u2], s2 = f2.type, m = f2.value, c = t[s2];
+            c >= 0 && (r2[c] = parseInt(m, 10));
+          }
+          var d = r2[3], l = d === 24 ? 0 : d, v = r2[0] + "-" + r2[1] + "-" + r2[2] + " " + l + ":" + r2[4] + ":" + r2[5] + ":000", h = +e2;
+          return (o.utc(v).valueOf() - (h -= h % 1e3)) / 6e4;
+        }, f = i.prototype;
+        f.tz = function(t2, e2) {
+          t2 === void 0 && (t2 = r);
+          var n2 = this.utcOffset(), i2 = this.toDate(), a2 = i2.toLocaleString("en-US", { timeZone: t2 }), u2 = Math.round((i2 - new Date(a2)) / 1e3 / 60), f2 = o(a2).$set("millisecond", this.$ms).utcOffset(15 * -Math.round(i2.getTimezoneOffset() / 15) - u2, true);
+          if (e2) {
+            var s2 = f2.utcOffset();
+            f2 = f2.add(n2 - s2, "minute");
+          }
+          return f2.$x.$timezone = t2, f2;
+        }, f.offsetName = function(t2) {
+          var e2 = this.$x.$timezone || o.tz.guess(), n2 = a(this.valueOf(), e2, { timeZoneName: t2 }).find(function(t3) {
+            return t3.type.toLowerCase() === "timezonename";
+          });
+          return n2 && n2.value;
+        };
+        var s = f.startOf;
+        f.startOf = function(t2, e2) {
+          if (!this.$x || !this.$x.$timezone)
+            return s.call(this, t2, e2);
+          var n2 = o(this.format("YYYY-MM-DD HH:mm:ss:SSS"));
+          return s.call(n2, t2, e2).tz(this.$x.$timezone, true);
+        }, o.tz = function(t2, e2, n2) {
+          var i2 = n2 && e2, a2 = n2 || e2 || r, f2 = u(+o(), a2);
+          if (typeof t2 != "string")
+            return o(t2).tz(a2);
+          var s2 = function(t3, e3, n3) {
+            var i3 = t3 - 60 * e3 * 1e3, o2 = u(i3, n3);
+            if (e3 === o2)
+              return [i3, e3];
+            var r2 = u(i3 -= 60 * (o2 - e3) * 1e3, n3);
+            return o2 === r2 ? [i3, o2] : [t3 - 60 * Math.min(o2, r2) * 1e3, Math.max(o2, r2)];
+          }(o.utc(t2, i2).valueOf(), f2, a2), m = s2[0], c = s2[1], d = o(m).utcOffset(c);
+          return d.$x.$timezone = a2, d;
+        }, o.tz.guess = function() {
+          return Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }, o.tz.setDefault = function(t2) {
+          r = t2;
+        };
+      };
+    });
+  }
+});
+
 // node_modules/lodash/lodash.js
 var require_lodash = __commonJS({
   "node_modules/lodash/lodash.js"(exports, module2) {
@@ -18288,6 +18440,8 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 
 // src/action.ts
 var import_dayjs = __toModule(require_dayjs_min());
+var import_utc = __toModule(require_utc());
+var import_timezone = __toModule(require_timezone());
 var import_lodash = __toModule(require_lodash());
 var import_utils = __toModule(require_utils4());
 
@@ -18388,6 +18542,8 @@ function post(url, body) {
 }
 
 // src/action.ts
+import_dayjs.default.extend(import_utc.default);
+import_dayjs.default.extend(import_timezone.default);
 var waiting = true;
 var ghDeployment;
 var markedAsInProgress = false;
@@ -18461,9 +18617,9 @@ async function run() {
           {
             mrkdwn_in: ["text"],
             color: "#b20f03",
-            title: `Deployment failed: ${import_utils.context.payload.head_commit.message}`,
+            title: `Deploy failed: ${import_utils.context.payload.head_commit.message}`,
             title_link: import_utils.context.payload.head_commit.url,
-            text: `Your build failed at *${(0, import_dayjs.default)(latestStage.ended_on).format("h:mm:ss A")}* on *${(0, import_dayjs.default)(latestStage.ended_on).format("MMMM D, YYYY")}*.`,
+            text: `Your build failed at *${import_dayjs.default.utc(latestStage.ended_on).tz("America/New_York").format("h:mmA")} EST* on *${import_dayjs.default.utc(latestStage.ended_on).tz("America/New_York").format("MMMM D, YYYY")}*.`,
             fields: [
               {
                 title: "Author",
@@ -18517,9 +18673,9 @@ async function run() {
             {
               mrkdwn_in: ["text"],
               color: "#2db35e",
-              title: `Deployed successfully: ${import_utils.context.payload.head_commit.message}`,
+              title: `Deploy succeeded: ${import_utils.context.payload.head_commit.message}`,
               title_link: import_utils.context.payload.head_commit.url,
-              text: `Your build succeeded at *${(0, import_dayjs.default)(latestStage.ended_on).format("h:mm:ss A")}* on *${(0, import_dayjs.default)(latestStage.ended_on).format("MMMM D, YYYY")}*.`,
+              text: `Your build succeeded at *${import_dayjs.default.utc(latestStage.ended_on).tz("America/New_York").format("h:mmA")} EST* on *${import_dayjs.default.utc(latestStage.ended_on).tz("America/New_York").format("MMMM D, YYYY")}*.`,
               fields: [
                 {
                   title: "Author",
