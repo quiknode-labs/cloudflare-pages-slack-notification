@@ -2,11 +2,16 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import fetch, { Response } from "node-fetch";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import tz from "dayjs/plugin/timezone";
 import _ from "lodash";
 
 import { context } from "@actions/github/lib/utils";
 import { ApiResponse, AuthHeaders, Deployment } from "./types";
 import SlackNotify from "slack-notify";
+
+dayjs.extend(utc);
+dayjs.extend(tz);
 
 let waiting = true;
 // @ts-ignore - Typing GitHub's responses is a pain in the ass
@@ -105,11 +110,15 @@ export default async function run() {
             {
               mrkdwn_in: ["text"],
               color: "#b20f03",
-              title: `Deployment failed: ${context.payload.head_commit.message}`,
+              title: `Deploy failed: ${context.payload.head_commit.message}`,
               title_link: context.payload.head_commit.url,
-              text: `Your build failed at *${dayjs(latestStage.ended_on).format(
-                "h:mm:ss A"
-              )}* on *${dayjs(latestStage.ended_on).format("MMMM D, YYYY")}*.`,
+              text: `Your build failed at *${dayjs
+                .utc(latestStage.ended_on)
+                .tz("America/New_York")
+                .format("h:mmA")} EST* on *${dayjs
+                .utc(latestStage.ended_on)
+                .tz("America/New_York")
+                .format("MMMM D, YYYY")}*.`,
               fields: [
                 {
                   title: "Author",
@@ -183,13 +192,15 @@ export default async function run() {
               {
                 mrkdwn_in: ["text"],
                 color: "#2db35e",
-                title: `Deployed successfully: ${context.payload.head_commit.message}`,
+                title: `Deploy succeeded: ${context.payload.head_commit.message}`,
                 title_link: context.payload.head_commit.url,
-                text: `Your build succeeded at *${dayjs(
-                  latestStage.ended_on
-                ).format("h:mm:ss A")}* on *${dayjs(
-                  latestStage.ended_on
-                ).format("MMMM D, YYYY")}*.`,
+                text: `Your build succeeded at *${dayjs
+                  .utc(latestStage.ended_on)
+                  .tz("America/New_York")
+                  .format("h:mmA")} EST* on *${dayjs
+                  .utc(latestStage.ended_on)
+                  .tz("America/New_York")
+                  .format("MMMM D, YYYY")}*.`,
                 fields: [
                   {
                     title: "Author",
